@@ -8,12 +8,17 @@ phases:
       - pip install bandit flask
   build:
     commands:
-      - echo "Starting Manual & Automated Security Audit..."
-      # 1. Automated Scan
-      - bandit -r . -lll || true
-      # 2. Manual "Kill Switch" - If 'ADMIN_PASSWORD' is found WITHOUT a '#', fail the build.
-      - if grep -q "ADMIN_PASSWORD =" secure_app/app.py; then echo "VULNERABILITY FOUND! Terminating Build..."; exit 1; fi
-      - echo "No hardcoded credentials found. Proceeding..."
+      - echo "Starting Advanced Security Policy Audit..."
+      # This 'grep' only looks for lines that START with ADMIN_PASSWORD
+      # It will IGNORE lines that start with '#'
+      - |
+        if grep -q -E "^\s*ADMIN_PASSWORD\s*=" secure_app/app.py; then
+          echo "VULNERABILITY FOUND! Terminating Build..."
+          exit 1
+        else
+          echo "No active hardcoded credentials found. System Secure."
+        fi
+      - bandit -r . -lll
 artifacts:
   files:
     - "**/*"
