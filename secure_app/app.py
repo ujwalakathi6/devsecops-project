@@ -6,7 +6,7 @@ app = Flask(__name__)
 # FACULTY DEMO: The Vulnerability
 # To show a "Clean" site, comment out the line below.
 # Bandit will flag this as B105 (Hardcoded password) with HIGH severity
-ADMIN_PASSWORD = "AKIA5S6D7F8G9H0J1K2L_SECRET_KEY_EXPOSED_123456789"
+#ADMIN_PASSWORD = "AKIA5S6D7F8G9H0J1K2L_SECRET_KEY_EXPOSED_123456789"
 
 @app.route('/')
 def home():
