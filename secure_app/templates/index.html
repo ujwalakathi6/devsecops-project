@@ -1,27 +1,170 @@
-<div class="container mt-5">
-    {% if vulnerable %}
-    <div class="alert alert-danger shadow-sm mb-4" role="alert">
-        <h4 class="alert-heading">⚠️ Security Breach Detected!</h4>
-        <p>{{ error }}</p>
-        <hr>
-        <p class="mb-0 small">The DevSecOps Pipeline has flagged this build for immediate termination.</p>
-    </div>
-    {% endif %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sreenidhi DevSecOps Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: rgba(22, 27, 34, 0.8);
+            --neon-blue: #58a6ff;
+            --neon-red: #ff7b72;
+            --neon-green: #3fb950;
+        }
 
-    <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            <div class="card p-5">
-                <h3>System Status</h3>
-                <hr>
-                <div class="mt-3">
-                    {% if vulnerable %}
-                        <span class="badge bg-danger status-badge">STATUS: COMPROMISED</span>
-                    {% else %}
-                        <span class="badge bg-success status-badge">STATUS: ACTIVE</span>
-                    {% endif %}
+        body {
+            background-color: var(--bg-color);
+            color: #c9d1d9;
+            font-family: 'Roboto Mono', monospace;
+            background-image: radial-gradient(circle at 2px 2px, #21262d 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        .navbar {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #30363d;
+            padding: 1rem;
+        }
+
+        .brand-text {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+        }
+
+        .hero-section {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border: 1px solid #30363d;
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+        }
+
+        /* Status Glowing Badges */
+        .status-box {
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 20px;
+            min-width: 250px;
+        }
+
+        .status-active {
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 15px rgba(63, 185, 80, 0.3);
+            color: var(--neon-green);
+        }
+
+        .status-breach {
+            border: 1px solid var(--neon-red);
+            box-shadow: 0 0 20px rgba(255, 123, 114, 0.4);
+            color: var(--neon-red);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 123, 114, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 123, 114, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 123, 114, 0); }
+        }
+
+        .alert-box {
+            background: rgba(255, 123, 114, 0.1);
+            border-left: 5px solid var(--neon-red);
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .footer-text {
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #8b949e;
+        }
+
+        .glitch-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar sticky-top">
+        <div class="container">
+            <span class="navbar-brand brand-text">
+                <i class="fas fa-shield-halved me-2"></i>SNIST DevSecOps
+            </span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="glitch-text mb-4">Infrastructure Security Node</h1>
+            <p class="text-muted">Automated Code Integrity Monitoring System v3.0</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                
+                {% if vulnerable %}
+                <div class="alert-box mb-5">
+                    <h4 class="text-danger"><i class="fas fa-radiation me-2"></i> SECURITY BREACH DETECTED</h4>
+                    <p class="mb-0 text-white">{{ error }}</p>
+                    <div class="mt-2 small text-danger font-monospace">AWS_PIPELINE_STATUS: TERMINATED_BY_BANDIT_SAST</div>
                 </div>
-                <p class="text-muted mt-4">Protected by AWS CodePipeline & Bandit SAST</p>
+                {% endif %}
+
+                <div class="main-card shadow-lg text-center">
+                    <h2 class="mb-4">System Core Status</h2>
+                    
+                    {% if vulnerable %}
+                        <div class="status-box status-breach">
+                            <i class="fas fa-lock-open fa-3x mb-3"></i>
+                            <h3 class="mb-0">COMPROMISED</h3>
+                        </div>
+                    {% else %}
+                        <div class="status-box status-active">
+                            <i class="fas fa-lock fa-3x mb-3"></i>
+                            <h3 class="mb-0">SECURE_ACTIVE</h3>
+                        </div>
+                    {% endif %}
+
+                    <div class="row mt-5">
+                        <div class="col-4 border-end border-secondary">
+                            <div class="small text-muted">Uptime</div>
+                            <div class="fw-bold text-info">99.9%</div>
+                        </div>
+                        <div class="col-4 border-end border-secondary">
+                            <div class="small text-muted">SAST Scan</div>
+                            <div class="fw-bold text-info">ENABLED</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="small text-muted">Build Node</div>
+                            <div class="fw-bold text-info">AWS_US_EAST_1</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-text text-center">
+                    <p>Powered by AWS CodePipeline • Bandit Security • Python Flask</p>
+                    <p>© 2026 Sreenidhi Institute of Science and Technology - DevSecOps Project</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</body>
+</html>
