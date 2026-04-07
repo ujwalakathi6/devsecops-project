@@ -3,22 +3,26 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 
-# --- THE FACULTY DEMO SWITCH ---
+# Load secrets from environment variables — do NOT hardcode secrets in source.
+# If you need to demonstrate a missing secret, set `ADMIN_PASSWORD` in the
+# environment of the running process locally or in CI; do not commit secrets.
+#ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 
-# STEP 1: To show "VULNERABLE" (RED BUILD), remove the '#' below:
-#ADMIN_PASSWORD = "AKIA_FAKE_AWS_KEY_EXPOSED_12345"
-#ADMIN_PASSWORD="admin123"
-  
-# STEP 2: To show "SAFE" (GREEN BUILD), cd put the '#' back at the start.
 
 @app.route('/')
 def home():
-    # We use globals().get so the app doesn't crash when password is commented
-    if globals().get('ADMIN_PASSWORD'):
-        return render_template('index.html', vulnerable=True, error="VULNERABILITY: Hardcoded Secret Found!")
-    
+    # Do not display secret values in templates or error messages.
+    if ADMIN_PASSWORD:
+        return render_template(
+            'index.html',
+            vulnerable=True,
+            error="Potential secret configured in environment (check deployment).",
+        )
+
     return render_template('index.html', vulnerable=False)
 
+
 if __name__ == "__main__":
-    # Added '# nosec' here so this line NEVER causes a build failure
-    app.run(host='0.0.0.0', port=8080)  # nosec
+    # Use Flask's dev server only for local testing. Port can be overridden
+    # with the PORT environment variable.
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
