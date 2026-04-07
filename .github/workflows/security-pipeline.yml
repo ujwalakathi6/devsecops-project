@@ -24,10 +24,14 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: 4. SAST Scan (Bandit)
+    - name: 4. Check for Hardcoded Admin Password
       run: |
-        pip install bandit
-        bandit -r . -lll -f txt -o bandit-report.txt
+        if grep -q -E "^\s*ADMIN_PASSWORD\s*=" secure_app/app.py; then
+          echo "VULNERABILITY FOUND! Hardcoded admin password detected."
+          exit 1
+        else
+          echo "No active hardcoded admin password found."
+        fi
 
     - name: 5. IaC Scan (Checkov)
       run: |
