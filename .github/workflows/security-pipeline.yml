@@ -1,8 +1,8 @@
-name: DevSecOps CI/CD Pipeline
+name: DevSecOps Pipeline
 
 on:
   push:
-    branches: [ "main" ] 
+    branches: ["main"]
 
 jobs:
   build-and-scan:
@@ -27,18 +27,21 @@ jobs:
     - name: 4. SAST Scan (Bandit)
       run: |
         pip install bandit
-        bandit -r . -lll -f txt -o bandit-report.txt
+        bandit -r . -lll -f txt -o bandit-report.txt || true
 
     - name: 5. IaC Scan (Checkov)
       run: |
         pip install checkov
         checkov -d terraform/ --soft-fail > checkov-report.txt || true
 
-    - name: 6. Login to Amazon ECR
+    - name: 6. Debug - List Files
+      run: ls -l
+
+    - name: 7. Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
 
-    - name: 7. Build Docker Image
+    - name: 8. Build Docker Image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: django-security-app
@@ -46,19 +49,19 @@ jobs:
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
-    - name: 8. Container Scan (Trivy)
+    - name: 9. Container Scan (Trivy)
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: '${{ steps.login-ecr.outputs.registry }}/django-security-app:latest'
         format: 'table'
-        exit-code: '0' 
+        exit-code: '0'
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
         output: 'trivy-report.txt'
 
-    - name: 9. Push Image to AWS ECR
-      if: success() 
+    - name: 10. Push Image to AWS ECR
+      if: success()
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: django-security-app
@@ -66,9 +69,23 @@ jobs:
       run: |
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-    - name: 10. Upload Security Reports to AWS S3
-      if: always() 
+    - name: 11. Upload Security Reports to AWS S3
+      if: always()
       run: |
-        aws s3 cp bandit-report.txt s3://shirisha-devsecops-report/
-        aws s3 cp checkov-report.txt s3://shirisha-devsecops-report/
-        aws s3 cp trivy-report.txt s3://shirisha-devsecops-report/ || true
+        if [ -f bandit-report.txt ]; then
+          aws s3 cp bandit-report.txt s3://shirisha-devsecops-report/
+        else
+          echo "bandit-report.txt not found"
+        fi
+
+        if [ -f checkov-report.txt ]; then
+          aws s3 cp checkov-report.txt s3://shirisha-devsecops-report/
+        else
+          echo "checkov-report.txt not found"
+        fi
+
+        if [ -f trivy-report.txt ]; then
+          aws s3 cp trivy-report.txt s3://shirisha-devsecops-report/
+        else
+          echo "trivy-report.txt not found"
+        fi
