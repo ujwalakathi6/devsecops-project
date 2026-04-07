@@ -69,6 +69,6 @@ jobs:
     - name: 10. Upload Security Reports to AWS S3
       if: always() 
       run: |
-        aws s3 cp bandit-report.txt s3://shirisha-devsecops-reports/
-        aws s3 cp checkov-report.txt s3://shirisha-devsecops-reports/
-        aws s3 cp trivy-report.txt s3://shirisha-devsecops-reports/ || true
+        aws s3 cp bandit-report.txt s3://shirisha-devsecops-report/
+        aws s3 cp checkov-report.txt s3://shirisha-devsecops-report/
+        aws s3 cp trivy-report.txt s3://shirisha-devsecops-report/ || true
