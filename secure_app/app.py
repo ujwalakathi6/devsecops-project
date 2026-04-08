@@ -6,7 +6,7 @@ app = Flask(__name__)
 # Load secrets from environment variables — do NOT hardcode secrets in source.
 # If you need to demonstrate a missing secret, set `ADMIN_PASSWORD` in the
 # environment of the running process locally or in CI; do not commit secrets.
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+# ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
 @app.route('/')
 def home():
     # Do not display secret values in templates or error messages
