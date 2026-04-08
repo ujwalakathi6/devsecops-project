@@ -24,10 +24,15 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: 4. SAST Scan (Bandit)
-      run: |
-        pip install bandit
-        bandit -r . -lll -f txt -o bandit-report.txt || true
+   - name: 4. SAST Scan (Bandit)
+  run: |
+    pip install bandit
+
+    echo "Running Bandit scan..."
+    bandit -r . -f txt -o bandit-report.txt || true
+
+    echo "Checking if report exists..."
+    ls -l bandit-report.txt || echo "Report not found"
 
     - name: 5. IaC Scan (Checkov)
       run: |
